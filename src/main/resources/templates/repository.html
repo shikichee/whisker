@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="_fragment::header (title=${title} + ' - bluefairy')">
+    <meta charset="UTF-8"/>
+    <title></title>
+    <link rel="icon" href="../static/app/img/favicon.ico"/>
+    <link href="../static/tether/css/tether.min.css" rel="stylesheet"/>
+    <link href="../static/bootstrap4a2/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="../static/c3/css/c3.min.css" rel="stylesheet"/>
+    <link href="../static/app/css/style.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="container">
+    <div th:replace="_fragment::navigator" class="navigator">
+        <nav class="navbar navbar-dark bg-inverse bg-faded">
+            <div class="collapse navbar-toggleable-xs" id="navbar-header">
+                <a class="navbar-brand" href="#">
+                    <img src="../static/app/img/logo.svg" th:src="@{/app/img/logo.svg}" alt="logo" width="24" height="24"/>
+                    whisker
+                </a>
+            </div>
+        </nav>
+    </div>
+</div>
+<!-- #modal -->
+<div id="modal" class="modal fade" tabindex="-1" role="dialog"
+     aria-labelledby="modal-label" aria-hidden="true"
+     data-backdrop="static" data-keyboard="false">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"
+                        data-loading-text="&times;" autocomplete="off"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="modal-title">Repository settings</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <input id="reposId" type="hidden"/>
+                    <fieldset class="form-group">
+                        <label class="form-control-label form-control-sm" for="reposName">Name*</label>
+                        <small class="text-muted">Example: ProjectRepos</small>
+                        <input id="reposName" class="form-control form-control-sm" type="text" placeholder="Required"/>
+                        <label class="form-control-label form-control-sm" for="reposExt">Extensions</label>
+                        <small class="text-muted" th:text="'Default: ' + ${defaultExtensions}">Default: .abc, .xyz</small>
+                        <input id="reposExt" class="form-control form-control-sm" type="text" placeholder="Optional"/>
+                        <label class="form-control-label form-control-sm" for="reposFilter">Filter</label>
+                        <small class="text-muted">Example: .*(Service|Repository).*</small>
+                        <input id="reposFilter" class="form-control form-control-sm" type="text" placeholder="Optional"/>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <h5 class="form-control-label text-muted">Git</h5>
+                        <label class="form-control-label form-control-sm" for="gitDir">Directory path*</label>
+                        <small class="text-muted">Example: /home/foo/repos/.git</small>
+                        <input id="gitDir" class="form-control form-control-sm" type="text" placeholder="Required"/>
+                        <label class="form-control-label form-control-sm" for="gitRegex">Extract regex</label>
+                        <small class="text-muted" th:text="'Default: ' + ${defaultRegex}">Default: .*/extract/regex/(.+)\..+</small>
+                        <input id="gitRegex" class="form-control form-control-sm" type="text" placeholder="Optional"/>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <h5 class="form-control-label text-muted">Source file</h5>
+                        <label class="form-control-label form-control-sm" for="sourceDir">Directory path*</label>
+                        <small class="text-muted">Example: /home/foo/repos/src</small>
+                        <input id="sourceDir" class="form-control form-control-sm" type="text" placeholder="Required"/>
+                        <label class="form-control-label form-control-sm" for="sourceRegex">Extract regex</label>
+                        <small class="text-muted" th:text="'Default: ' + ${defaultRegex}">Default: .*/extract/regex/(.+)\..+</small>
+                        <input id="sourceRegex" class="form-control form-control-sm" type="text" placeholder="Optional"/>
+                    </fieldset>
+                    <fieldset class="form-group">
+                        <h5 class="form-control-label text-muted">Class file</h5>
+                        <label class="form-control-label form-control-sm" for="classFileDir">Directory path*</label>
+                        <small class="text-muted">Example: /home/foo/repos/target/classes</small>
+                        <input id="classFileDir" class="form-control form-control-sm" type="text" placeholder="Required"/>
+                        <label class="form-control-label form-control-sm" for="classFileRegex">Extract regex</label>
+                        <small class="text-muted" th:text="'Default: ' + ${defaultRegex}">Default: .*/extract/regex/(.+)\..+</small>
+                        <input id="classFileRegex" class="form-control form-control-sm" type="text" placeholder="Optional"/>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal"
+                        data-loading-text="Cancel" autocomplete="off">Cancel</button>
+                <button type="button" class="btn btn-primary" id="modal-btn-save"
+                        data-loading-text="Please wait.." autocomplete="off">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- /#modal -->
+<div class="container">
+    <h1 class="text-uppercase" th:text="${title}">Title</h1>
+    <p class="lead"></p>
+    <table class="table table-hover">
+        <thead>
+        <tr>
+            <th class="col-name">Name</th>
+            <th class="col-ext">Extensions</th>
+            <th class="col-filter">FILTER</th>
+            <th class="col-gitDir">Git dir</th>
+            <th class="col-gitRegex">Git regex</th>
+            <th class="col-modifier">Modifier</th>
+            <th class="col-modified">Modified</th>
+            <th><a class="item-add" href="#">Add</a></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="repos : ${repositories}">
+            <td class="val-name filter-value ellipsis" title="Name"
+                data-container="body" data-toggle="popover"
+                data-placement="top" data-trigger="hover"
+                th:text="${repos.name}"
+                th:attr="data-val-name=${repos.name}">
+                Repos Name
+            </td>
+            <td class="val-extensions filter-value ellipsis" title="Extensions"
+                data-container="body" data-toggle="popover"
+                data-placement="top" data-trigger="hover"
+                th:text="${#strings.listJoin(repos.extensions, ', ')}"
+                th:attr="data-val-extensions=${#strings.listJoin(repos.extensions, ', ')}">
+                .ext, .x
+            </td>
+            <td class="val-filter filter-value ellipsis" title="Filter"
+                data-container="body" data-toggle="popover"
+                data-placement="top" data-trigger="hover"
+                th:text="${repos.filter}"
+                th:attr="data-val-name=${repos.filter}">
+                Repos Filter
+            </td>
+            <td class="val-git-directory filter-value ellipsis" title="Git dir"
+                data-container="body" data-toggle="popover"
+                data-placement="top" data-trigger="hover"
+                th:text="${repos.git.directory}"
+                th:attr="data-val-git-directory=${repos.git.directory}">
+                /dir/path
+            </td>
+            <td class="val-git-extract-regex filter-value ellipsis" title="Git regex"
+                data-container="body" data-toggle="popover"
+                data-placement="top" data-trigger="hover"
+                th:text="${repos.git.extractRegex}"
+                th:attr="data-val-git-extract-regex=${repos.git.extractRegex}">
+                .*/regex
+            </td>
+            <td class="val-modifier filter-value ellipsis" title="Modifier"
+                data-container="body" data-toggle="popover"
+                data-placement="top" data-trigger="hover"
+                th:text="${repos.modifier}"
+                th:attr="data-val-modifier=${repos.modifier}">
+                Modifier
+            </td>
+            <td class="val-modified filter-value ellipsis" title="Modified"
+                data-container="body" data-toggle="popover"
+                data-placement="top" data-trigger="hover"
+                th:text="${#dates.format(repos.modified, 'yyyy-MM-dd HH:mm:ss')}"
+                th:attr="data-val-modified=${#dates.format(repos.modified, 'yyyy-MM-dd HH:mm:ss')}">
+                2016-01-19
+            </td>
+            <td>
+                <a class="item-edit" href="#"
+                   th:attr="data-val-id=${repos.id},
+                            data-val-name=${repos.name},
+                            data-val-extensions=${#strings.listJoin(repos.extensions, ', ')},
+                            data-val-filter=${repos.filter},
+                            data-val-git-directory=${repos.git.directory},
+                            data-val-git-extract-regex=${repos.git.extractRegex},
+                            data-val-source-directory=${repos.source.directory},
+                            data-val-source-extract-regex=${repos.source.extractRegex},
+                            data-val-class-file-directory=${repos.classFile.directory},
+                            data-val-class-file-extract-regex=${repos.classFile.extractRegex}">Edit</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div><!-- /.container -->
+
+<footer th:replace="_fragment::footer">
+    <script src="../static/jquery/js/jquery.min.js"></script>
+    <script src="../static/tether/js/tether.min.js"></script>
+    <script src="../static/bootstrap4a2/js/bootstrap.min.js"></script>
+    <script src="../static/d3/js/d3.min.js"></script>
+    <script src="../static/c3/js/c3.min.js"></script>
+    <script src="../static/app/js/app.js"></script>
+</footer>
+<script type="text/javascript" th:inline="javascript">
+/*<![CDATA[*/
+
+/*
+ * Popover
+ */
+$('[data-toggle="popover"]').popover({
+    content: function() {
+        return $(this).text();
+    }
+});
+
+/*
+ * Get modal
+ */
+var getModalForm = function() {
+    return {
+        id: $('#reposId').val(),
+        name: $('#reposName').val(),
+        extensions: ($('#reposExt').val() ? $('#reposExt').val().replace(/\s/, '').split(',') : []),
+        filter: $('#reposFilter').val(),
+        git: {
+            directory: $('#gitDir').val(),
+            extractRegex: $('#gitRegex').val()
+        },
+        source: {
+            directory: $('#sourceDir').val(),
+            extractRegex: $('#sourceRegex').val()
+        },
+        classFile: {
+            directory: $('#classFileDir').val(),
+            extractRegex: $('#classFileRegex').val()
+        }
+    };
+};
+
+/*
+ * Set modal form
+ */
+var setModalForm = function(data) {
+    $('#reposId').val(data.reposId);
+    $('#reposName').val(data.reposName);
+    $('#reposExt').val(data.reposExt);
+    $('#reposFilter').val(data.reposFilter);
+    $('#gitDir').val(data.gitDir);
+    $('#gitRegex').val(data.gitRegex);
+    $('#sourceDir').val(data.sourceDir);
+    $('#sourceRegex').val(data.sourceRegex);
+    $('#classFileDir').val(data.classFileDir);
+    $('#classFileRegex').val(data.classFileRegex);
+};
+
+/*
+ * Set modal button [Save]
+ */
+var setModalBtnSave = function(saveAction) {
+    $('#modal-btn-save').on({
+        click: saveAction
+    });
+};
+
+/*
+ * Show add modal
+ */
+$('.item-add').on({
+    click: function() {
+        var $this = $(this);
+
+        setModalForm({
+            reposId: '',
+            reposName: '',
+            reposExt: '',
+            reposFilter: '',
+            gitDir: '',
+            gitRegex: '',
+            sourceDir: '',
+            sourceRegex: '',
+            classFileDir: '',
+            classFileRegex: ''
+        });
+
+        setModalBtnSave(function() {
+            var $this = $(this);
+            $.ajax({
+                type: 'POST',
+                url: /*[[ @{/api/v1/repositories} ]]*/ '#',
+                contentType: 'application/json;charset=UTF-8',
+                processData: false,
+                data: JSON.stringify(getModalForm()),
+                statusCode: {
+                    404: function() {
+                        console.log('page not found');
+                    }
+                }
+            }).done(function() {
+                location.href = /*[[ @{/repository} ]]*/ '#';
+            });
+        });
+
+        $('#modal').modal('show');
+    }
+});
+
+/*
+ * Show edit modal
+ */
+$('.item-edit').on({
+    click: function () {
+        var $this = $(this);
+        var $tr = $this.closest('tr');
+
+        setModalForm({
+            reposId: $tr.find('.item-edit').data('val-id'),
+            reposName: $tr.find('.item-edit').data('val-name'),
+            reposExt: $tr.find('.item-edit').data('val-extensions'),
+            reposFilter: $tr.find('.item-edit').data('val-filter'),
+            gitDir: $tr.find('.item-edit').data('val-git-directory'),
+            gitRegex: $tr.find('.item-edit').data('val-git-extract-regex'),
+            sourceDir: $tr.find('.item-edit').data('val-source-directory'),
+            sourceRegex: $tr.find('.item-edit').data('val-source-extract-regex'),
+            classFileDir: $tr.find('.item-edit').data('val-class-file-directory'),
+            classFileRegex: $tr.find('.item-edit').data('val-class-file-extract-regex')
+        });
+
+        setModalBtnSave(function() {
+            var $this = $(this);
+            $.ajax({
+                type: 'PUT',
+                url: /*[[ @{/api/v1/repositories} ]]*/ '#',
+                contentType: 'application/json;charset=UTF-8',
+                processData: false,
+                data: JSON.stringify(getModalForm()),
+                statusCode: {
+                    404: function() {
+                        console.log('page not found');
+                    }
+                }
+            }).done(function() {
+                location.href = /*[[ @{/repository} ]]*/ '#';
+            });
+        });
+
+        $('#modal').modal('show');
+    }
+});
+
+/*]]>*/
+</script>
+</body>
+</html>

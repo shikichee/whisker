@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head th:fragment="header (title)">
+    <meta charset="UTF-8"/>
+    <title th:text="${title}">title</title>
+    <link rel="icon" href="../static/app/img/favicon.ico" th:href="@{/app/img/favicon.ico}"/>
+    <link href="../static/tether/css/tether.min.css" th:href="@{/tether/css/tether.min.css}" rel="stylesheet"/>
+    <link href="../static/bootstrap4a2/css/bootstrap.min.css" th:href="@{/bootstrap4a2/css/bootstrap.min.css}" rel="stylesheet"/>
+    <link href="../static/c3/css/c3.min.css" th:href="@{/c3/css/c3.min.css}" rel="stylesheet"/>
+    <link href="../static/app/css/style.css" th:href="@{/app/css/style.css}" rel="stylesheet"/>
+</head>
+<body>
+<div class="container">
+    <div th:fragment="navigator" class="navigator">
+        <button class="navbar-toggler hidden-sm-up" type="button" data-toggle="collapse" data-target="#navbar-header" aria-controls="navbar-header"></button>
+        <div class="collapse" id="exCollapsingNavbar">
+            <div class="p-a-1">
+                <h4>Preference navigator</h4>
+                <a href="#"
+                   th:href="@{/repository}">Repository</a>
+            </div>
+        </div>
+        <nav class="navbar navbar-dark bg-inverse bg-faded">
+            <div class="collapse navbar-toggleable-xs" id="navbar-header">
+                <a class="navbar-brand" href="#">
+                    <img src="../static/app/img/logo.svg" th:src="@{/app/img/logo.svg}" alt="logo" width="24" height="24"/>
+                    whisker
+                </a>
+                <ul class="nav navbar-nav">
+                    <li class="nav-item active">
+                        <a class="nav-link dropdown-toggle" href="#"
+                           data-toggle="dropdown" data-target="#"
+                           aria-haspopup="true" aria-expanded="false"
+                           role="button">Chart <span class="caret"></span></a>
+                        <div class="dropdown-menu menu-chart">
+                            <a class="dropdown-item" href="#"
+                               th:href="@{/scatter/refactoring-impact}">Refactoring impact</a>
+                        </div>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav pull-xs-right">
+                    <li class="nav-item active">
+                        <a class="navbar-toggler nav-link" href="#"
+                           data-toggle="collapse" data-target="#exCollapsingNavbar">
+                            &#9776;
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </div>
+</div>
+<footer th:fragment="footer">
+<script src="../static/jquery/js/jquery.min.js" th:src="@{/jquery/js/jquery.min.js}"></script>
+<script src="../static/tether/js/tether.min.js" th:src="@{/tether/js/tether.min.js}"></script>
+<script src="../static/bootstrap4a2/js/bootstrap.min.js" th:src="@{/bootstrap4a2/js/bootstrap.min.js}"></script>
+<script src="../static/d3/js/d3.min.js" th:src="@{/d3/js/d3.min.js}"></script>
+<script src="../static/c3/js/c3.min.js" th:src="@{/c3/js/c3.min.js}"></script>
+<script src="../static/app/js/app.js" th:src="@{/app/js/app.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+/*<![CDATA[*/
+
+$.ajax({
+    type: 'GET',
+    url: /*[[ @{/api/v1/repositories} ]]*/ '#',
+    contentType: 'application/json;charset=UTF-8',
+    processData: false,
+    dataType: 'json',
+    statusCode: {
+        404: function() {
+            console.log('page not found');
+        }
+    }
+}).done(function(data) {
+    var url = /*[[ @{/scatter/refactoring-impact} ]]*/ '#';
+    for (var i = 0; i < data.length; i++) {
+        var d = data[i];
+        $('.dropdown-menu.menu-chart')
+                .append('<a class="dropdown-item" href="' + url + '/' + d.name + '">' + d.name + '</a>');
+    }
+});
+
+/*]]>*/
+</script>
+</footer>
+</body>
+</html>

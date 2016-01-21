@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head th:replace="_fragment::header (title=${title} + ' - bluefairy')">
+    <meta charset="UTF-8"/>
+    <title></title>
+    <link rel="icon" href="../static/app/img/favicon.ico"/>
+    <link href="../static/bootstrap4a2/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="../static/c3/css/c3.min.css" rel="stylesheet"/>
+    <link href="../static/app/css/style.css" rel="stylesheet"/>
+</head>
+<body>
+<div class="container">
+    <div th:replace="_fragment::navigator" class="navigator">
+        <nav class="navbar navbar-dark bg-inverse bg-faded">
+            <div class="collapse navbar-toggleable-xs" id="navbar-header">
+                <a class="navbar-brand" href="#">
+                    <img src="../static/app/img/logo.svg" th:src="@{/app/img/logo.svg}" alt="logo" width="24" height="24"/>
+                    whisker
+                </a>
+            </div>
+        </nav>
+    </div>
+</div>
+<div class="container">
+    <h1 class="text-uppercase" th:text="${title}">Title</h1>
+    <p class="lead"></p>
+    <table class="table">
+        <thead>
+        <tr>
+            <th class="text-xs-right"><a id="chart-reset" href="#">Reset scale</a></th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr>
+            <td>
+                <div id="chart"></div>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+<footer th:replace="_fragment::footer">
+    <script src="../static/jquery/js/jquery.min.js"></script>
+    <script src="../static/bootstrap4a2/js/bootstrap.min.js"></script>
+    <script src="../static/d3/js/d3.min.js"></script>
+    <script src="../static/c3/js/c3.min.js"></script>
+    <script src="../static/app/js/app.js"></script>
+</footer>
+<script th:inline="javascript">
+/*<![CDATA[*/
+(function init() {
+    var chart = new ScatterChart('#chart');
+
+    $.ajax({
+        type: 'GET',
+        url: /*[[ @{/api/v1} + ${metricsApi} ]]*/ '../static/app/js/example.json',
+        contentType: 'application/json',
+        processData: false,
+        dataType: 'json'
+    }).done(function(data) {
+        chart.draw(data);
+    }).fail(function(error, textStatus, $xhr) {
+        console.log(error);
+    });
+
+    $('#chart-reset').on('click', function() {
+        chart.reset();
+    });
+})();
+/*]]>*/
+</script>
+</body>
+</html>

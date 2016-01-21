@@ -1,0 +1,61 @@
+body {
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
+
+.bg-faded {
+    background-color: #c09d43;
+}
+
+.navbar-brand>img {
+    display: inline;
+    margin-top: -4px;
+    margin-right: 2px;
+}
+
+.nav-item .dropdown-menu {
+    left: inherit;
+}
+
+.ellipsis {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.val-name {
+    max-width: 12.0rem;
+}
+
+.val-extensions,
+.val-filter,
+.val-git-directory,
+.val-git-extract-regex,
+.val-modifier,
+.val-modified {
+    max-width: 6.0rem;
+}
+
+#chart {
+    max-width: 800px;
+    max-height:600px;
+    height: 600px;
+}
+
+.table th,
+.table thead th,
+.table tbody tr:first-child td {
+    border: 0;
+}
+
+.table thead {
+    background-color: #dbc58e;
+}
+
+.navigator {
+    margin-bottom: 2rem;
+}
+
+.popover {
+    max-width: 480px;
+}
