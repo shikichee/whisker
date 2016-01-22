@@ -1,7 +1,7 @@
 /**
  * Created by yoichi.kikuchi on 2016/01/14.
  */
-function ScatterChart(bindto) {
+var ScatterChart = function (bindto) {
     this.bindto = bindto;
     this.c3data = null;
     this.chart = null;
@@ -11,7 +11,7 @@ function ScatterChart(bindto) {
             y: 0
         }
     };
-}
+};
 
 /**
  * Draw scatter chart.
@@ -125,5 +125,3 @@ ScatterChart.prototype.reset = function() {
     this.chart.internal.config.axis_y_max = undefined;
     this.chart.flush();
 };
-
-module.exports = ScatterChart;

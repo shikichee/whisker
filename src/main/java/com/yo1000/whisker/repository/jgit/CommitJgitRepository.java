@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.io.File;
 import java.io.IOException;
 import java.io.UncheckedIOException;
+import java.nio.file.Path;
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,13 +22,13 @@ import java.util.stream.StreamSupport;
 @Repository
 public class CommitJgitRepository implements CommitRepository {
     @Override
-    public Map<String, Integer> selectDiffSummaryByLog(File gitDirectory) throws IOException {
+    public Map<String, Integer> selectDiffSummaryByLog(Path gitDirectory) throws IOException {
         return this.selectDiffSummaryByLog(gitDirectory, ".*");
     }
 
     @Override
-    public Map<String, Integer> selectDiffSummaryByLog(File gitDirectory, String commentFilterRegex) throws IOException {
-        org.eclipse.jgit.lib.Repository repository = newRepository(gitDirectory);
+    public Map<String, Integer> selectDiffSummaryByLog(Path gitDirectory, String commentFilterRegex) throws IOException {
+        org.eclipse.jgit.lib.Repository repository = newRepository(gitDirectory.toFile());
         Git git = new Git(repository);
 
         DiffFormatter diffFormatter = new DiffFormatter(System.out);

@@ -3,8 +3,9 @@ package com.yo1000.whisker.service;
 import com.yo1000.whisker.model.Metrics;
 import com.yo1000.whisker.model.Repository;
 import com.yo1000.whisker.repository.CommitRepository;
+import com.yo1000.whisker.repository.ComplexityRepository;
+import com.yo1000.whisker.repository.DependencyRepository;
 import com.yo1000.whisker.repository.RepositoryRepository;
-import com.yo1000.winchester.analyzer.CyclomaticComplexity;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -23,9 +24,10 @@ import java.util.stream.Collectors;
 @Service
 public class MetricsService {
     protected static final Map.Entry<String, Integer> ELSE_ENTRY = new AbstractMap.SimpleEntry<>("", 0);
-
     private final RepositoryRepository repositoryRepository;
     private final CommitRepository commitRepository;
+    private final ComplexityRepository complexityRepository;
+    private final DependencyRepository dependencyRepository;
     private final String gitCommentRegex;
     private final String defaultExtractRegex;
     private final List<String> defaultExtensions;
@@ -34,11 +36,15 @@ public class MetricsService {
     public MetricsService(
             RepositoryRepository repositoryRepository,
             CommitRepository commitRepository,
+            ComplexityRepository complexityRepository,
+            DependencyRepository dependencyRepository,
             @Value("${application.metrics.git.comment-regex}") String gitCommentRegex,
             @Value("${application.metrics.default.extract-regex}") String defaultExtractRegex,
             @Value("#{T(java.util.Arrays).asList('${application.metrics.default.extensions}')}") List<String> defaultExtensions) {
         this.repositoryRepository = repositoryRepository;
         this.commitRepository = commitRepository;
+        this.complexityRepository = complexityRepository;
+        this.dependencyRepository = dependencyRepository;
         this.gitCommentRegex = gitCommentRegex;
         this.defaultExtractRegex = defaultExtractRegex;
         this.defaultExtensions = defaultExtensions;
@@ -65,16 +71,16 @@ public class MetricsService {
     }
 
     protected Metrics find(Repository repository) throws IOException {
-        final Map<String, Integer> fixDiffsMap = this.getCommitRepository().selectDiffSummaryByLog(Paths.get(
-                repository.getGit().getDirectory()).toFile(), this.getGitCommentRegex());
+        final Map<String, Integer> fixDiffsMap = this.getCommitRepository().selectDiffSummaryByLog(
+                Paths.get(repository.getGit().getDirectory()), this.getGitCommentRegex());
 
-        final Map<String, Integer> complexityMap = new CyclomaticComplexity().analyze(Paths.get(
-                repository.getSource().getDirectory()),
+        final Map<String, Integer> complexityMap = this.getComplexityRepository().select(
+                Paths.get(repository.getSource().getDirectory()),
                 repository.getExtensions() != null && !repository.getExtensions().isEmpty()
                         ? repository.getExtensions() : this.getDefaultExtensions());
 
-        final Map<String, Integer> dependencyMap = new CyclomaticComplexity().analyze(Paths.get(
-                repository.getClassFile().getDirectory()), Arrays.asList(".class"));
+        final Map<String, Integer> dependencyMap = this.getDependencyRepository().select(
+                Paths.get(repository.getClassFile().getDirectory()), Arrays.asList(".class"));
 
         final Pattern defaultFileExtractPattern = Pattern.compile(this.getDefaultExtractRegex());
         final Pattern gitFileExtractPattern =
@@ -182,6 +188,14 @@ public class MetricsService {
 
     protected CommitRepository getCommitRepository() {
         return commitRepository;
+    }
+
+    public ComplexityRepository getComplexityRepository() {
+        return complexityRepository;
+    }
+
+    public DependencyRepository getDependencyRepository() {
+        return dependencyRepository;
     }
 
     protected String getGitCommentRegex() {
