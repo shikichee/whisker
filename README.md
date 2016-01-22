@@ -1,5 +1,5 @@
 # whisker
-Visualize Refactoring-impact.
+Visualize Refactoring impact.
 
 ## Usage
 
