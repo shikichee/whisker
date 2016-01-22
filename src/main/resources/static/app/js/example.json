@@ -1,21 +1,11 @@
-{
+[{
+  "repository": "REPOS",
   "names": {
-    "x10y60": [
-      "x10y60-label-1"
-    ],
-    "x20y70": [
-      "x20y70-label-1",
-      "x20y70-label-2"
-    ],
-    "x30y80": [
-      "x30y80-label-1"
-    ],
-    "x40y90": [
-      "x40y90-label-1"
-    ]
+    "x10y60": ["ClassName1a"],
+    "x20y70": ["ClassName2a", "ClassName2b"],
+    "x30y80": ["ClassName3a"],
+    "x40y90": ["ClassName4a"]
   },
-  "xs": ["x", 10, 20, 30, 40],
-  "ys": ["y", 60, 70, 80, 90],
-  "xaxis": "xasis-label",
-  "yaxis": "yasis-label"
-}
+  "xs": [10, 20, 30, 40],
+  "ys": [60, 70, 80, 90]
+}]

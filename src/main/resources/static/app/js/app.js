@@ -17,18 +17,17 @@ var ScatterChart = function (bindto) {
  * Draw scatter chart.
  *
  * data layout requirements:
- * {
+ * [{
+ *   "repository": "REPOS",
  *   "names": {
- *     "x10y60": ["x10y60-label-1"],
- *     "x20y70": ["x20y70-label-1", "x20y70-label-2"],
- *     "x30y80": ["x30y80-label-1"],
- *     "x40y90": ["x40y90-label-1"]
+ *     "x10y60": ["ClassName1a"],
+ *     "x20y70": ["ClassName2a", "ClassName2b"],
+ *     "x30y80": ["ClassName3a"],
+ *     "x40y90": ["ClassName4a"]
  *   },
- *   "xs": ["x", 10, 20, 30, 40],
- *   "ys": ["y", 60, 70, 80, 90],
- *   "xaxis": "xasis-label",
- *   "yaxis": "yasis-label"
- * }
+ *   "xs": [10, 20, 30, 40],
+ *   "ys": [60, 70, 80, 90]
+ * }]
  *
  * @param data scatter chart data.
  */
@@ -37,15 +36,16 @@ ScatterChart.prototype.draw = function(data, xaxis, yaxis) {
     var yaxisText = yaxis || 'Service impact';
 
     var names = {};
+    var repos = {};
     var xs = {};
     var cols = [];
 
     for (var i = 0; i < data.length; i++) {
         var d = data[i];
-        var repos = d.repository;
+        var repo = d.repository;
 
-        var xindex = repos;
-        var yindex = repos + '_y';
+        var xindex = repo;
+        var yindex = repo + '_y';
         xs[xindex] = yindex;
 
         var x = d.ys;
@@ -55,16 +55,14 @@ ScatterChart.prototype.draw = function(data, xaxis, yaxis) {
         cols.push(x);
         cols.push(y);
 
-        if (i == 0) {
-            names = d.names;
-            continue;
-        }
-
         for (var key in d.names) {
+            repos[d.names[key]] = repo;
+
             if (key in names) {
-                names[key].push(d.names[key]);
+                Array.prototype.push.apply(names[key], d.names[key]);
                 continue;
             }
+
             names[key] = d.names[key];
         }
     }
@@ -84,6 +82,7 @@ ScatterChart.prototype.draw = function(data, xaxis, yaxis) {
         },
         axis: {
             x: {
+                min: 0,
                 label: {
                     text: xaxisText,
                     position: 'outer'
@@ -93,6 +92,7 @@ ScatterChart.prototype.draw = function(data, xaxis, yaxis) {
                 }
             },
             y: {
+                min: 0,
                 label: {
                     text: yaxisText,
                     position: 'outer-middle'
@@ -102,17 +102,18 @@ ScatterChart.prototype.draw = function(data, xaxis, yaxis) {
         tooltip: {
             contents: function (data, defaultTitleFormat, defaultValueFormat, color) {
                 var ns = names['x' + data[0].x + 'y' + data[0].value];
-                var contents = '';
+                var contents = '<div style="background-color:rgba(255,255,255,0.9); padding:1rem;"><h1 style="font-size:18px;">' +
+                    xaxisText + ' = ' + data[0].x + '<br/>' +
+                    yaxisText + ' = ' + data[0].value + '</h1>';
+
                 for (var i = 0; i < ns.length; i++) {
-                    contents += ns[i] + '\n';
+                    contents += '<div><i style="color:' + color(repos[ns[i]]) + '" class="fa fa-square"></i> ' +
+                        ns[i].replace(/,/, '<br/>') + '</div>';
                 }
 
-                return '<div style="background-color:rgba(255,255,255,0.8);">' +
-                    '<h1 style="font-size:18px;">' +
-                    xaxisText + ' = ' + data[0].x + '<br/>' +
-                    yaxisText + ' = ' + data[0].value + '</h1>' +
-                    '<pre style="font-size:12px;">' + contents + '</pre>' +
-                    '</div>';
+                contents += '</div>';
+
+                return contents;
             }
         }
     };
