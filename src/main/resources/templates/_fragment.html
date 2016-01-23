@@ -24,7 +24,8 @@
         <nav class="navbar navbar-dark bg-inverse bg-faded">
             <div class="collapse navbar-toggleable-xs" id="navbar-header">
                 <a class="navbar-brand" href="#">
-                    <img src="../static/app/img/logo.svg" th:src="@{/app/img/logo.svg}" alt="logo" width="24" height="24"/>
+                    <object type="image/svg+xml" data="../static/app/img/logo.svg" th:attr="data=@{/app/img/logo.svg}"
+                            alt="logo" width="32" height="32" style="color-fill:#fff;fill:#fff;color:#fff"></object>
                     whisker
                 </a>
                 <ul class="nav navbar-nav">

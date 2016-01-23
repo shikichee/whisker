@@ -7,10 +7,10 @@ body {
     background-color: #c09d43;
 }
 
-.navbar-brand>img {
+.navbar-brand>object {
     display: inline;
-    margin-top: -4px;
-    margin-right: 2px;
+    padding-bottom: 5px;
+    vertical-align: middle;
 }
 
 .nav-item .dropdown-menu {
