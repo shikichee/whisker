@@ -28,12 +28,14 @@
     <table class="table">
         <thead>
         <tr>
+            <th><input id="checkbox-zero" type="checkbox"/> Filter 0 value</th>
+            <th><input id="checkbox-over" type="checkbox"/> Filter oversized value</th>
             <th class="text-xs-right"><a id="chart-reset" href="#">Reset scale</a></th>
         </tr>
         </thead>
         <tbody>
         <tr>
-            <td>
+            <td colspan="3">
                 <div id="chart"></div>
             </td>
         </tr>
@@ -50,22 +52,32 @@
 <script th:inline="javascript">
 /*<![CDATA[*/
 (function init() {
-    var chart = new ScatterChart('#chart');
+    var chart = new Chart('#chart', /*[[ ${chart} ]]*/ 'chartType');
+    var url = /*[[ @{/api/v1} + ${metricsApi} ]]*/ '../static/app/js/example.json';
+    var cache;
 
     $.ajax({
         type: 'GET',
-        url: /*[[ @{/api/v1} + ${metricsApi} ]]*/ '../static/app/js/example.json',
+        url: url,
         contentType: 'application/json',
         processData: false,
         dataType: 'json'
     }).done(function(data) {
-        chart.draw(data);
+        cache = data;
+        chart.draw(cache);
     }).fail(function(error, textStatus, $xhr) {
         console.log(error);
     });
 
     $('#chart-reset').on('click', function() {
         chart.reset();
+    });
+
+    $('#checkbox-zero, #checkbox-over').on('click', function() {
+        var checkedZero = $('#checkbox-zero').prop("checked");
+        var checkedOver = $('#checkbox-over').prop("checked");
+
+        chart.draw(cache, checkedZero, checkedOver);
     });
 })();
 /*]]>*/

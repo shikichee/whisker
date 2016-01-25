@@ -3,10 +3,7 @@ package com.yo1000.whisker.controller.api;
 import com.yo1000.whisker.model.Metrics;
 import com.yo1000.whisker.service.MetricsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,18 +21,25 @@ public class MetricsResource {
         this.metricsService = metricsService;
     }
 
-    @RequestMapping(value = "refactoring-impact", method = RequestMethod.GET,
-            produces = "application/json;charset=UTF-8",
-            consumes = "application/json")
-    public List<Metrics> get() throws IOException {
-        return this.getMetricsService().find();
+    @RequestMapping(value = "refactoring-impact/bubble", method = RequestMethod.GET)
+    public List<Metrics> getBubble() throws IOException {
+        return this.getMetricsService().findBubble();
     }
 
-    @RequestMapping(value = "refactoring-impact/{name}", method = RequestMethod.GET,
-            produces = "application/json;charset=UTF-8",
-            consumes = "application/json")
-    public List<Metrics> get(@PathVariable String name) throws IOException {
-        return this.getMetricsService().find(name);
+    @RequestMapping(value = "refactoring-impact/bubble/{name}", method = RequestMethod.GET)
+    public List<Metrics> getBubble(@PathVariable String name) throws IOException {
+        return this.getMetricsService().findBubble(name);
+    }
+
+
+    @RequestMapping(value = "refactoring-impact/scatter", method = RequestMethod.GET)
+    public List<Metrics> getScatter() throws IOException {
+        return this.getMetricsService().findScatter();
+    }
+
+    @RequestMapping(value = "refactoring-impact/scatter/{name}", method = RequestMethod.GET)
+    public List<Metrics> getScatter(@PathVariable String name) throws IOException {
+        return this.getMetricsService().findScatter(name);
     }
 
     protected MetricsService getMetricsService() {

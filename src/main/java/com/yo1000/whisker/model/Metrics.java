@@ -9,9 +9,9 @@ import java.util.Map;
  */
 public class Metrics implements Serializable {
     private String repository;
-    private Map<String, List<String>> names;
     private List<Integer> xs;
     private List<Integer> ys;
+    private Map<String, List<Z>> zs;
 
     public String getRepository() {
         return repository;
@@ -19,14 +19,6 @@ public class Metrics implements Serializable {
 
     public void setRepository(String repository) {
         this.repository = repository;
-    }
-
-    public Map<String, List<String>> getNames() {
-        return names;
-    }
-
-    public void setNames(Map<String, List<String>> names) {
-        this.names = names;
     }
 
     public List<Integer> getXs() {
@@ -43,5 +35,41 @@ public class Metrics implements Serializable {
 
     public void setYs(List<Integer> ys) {
         this.ys = ys;
+    }
+
+    public Map<String, List<Z>> getZs() {
+        return zs;
+    }
+
+    public void setZs(Map<String, List<Z>> zs) {
+        this.zs = zs;
+    }
+
+    public static class Z {
+        private String name;
+        private Integer value;
+
+        public Z() {}
+
+        public Z(String name, Integer value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public Integer getValue() {
+            return value;
+        }
+
+        public void setValue(Integer value) {
+            this.value = value;
+        }
     }
 }

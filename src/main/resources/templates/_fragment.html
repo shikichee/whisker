@@ -29,14 +29,24 @@
                     whisker
                 </a>
                 <ul class="nav navbar-nav">
-                    <li class="nav-item active">
+                    <li class="nav-item">
                         <a class="nav-link dropdown-toggle" href="#"
                            data-toggle="dropdown" data-target="#"
                            aria-haspopup="true" aria-expanded="false"
-                           role="button">Chart <span class="caret"></span></a>
-                        <div class="dropdown-menu menu-chart">
+                           role="button">Bubble chart<span class="caret"></span></a>
+                        <div class="dropdown-menu menu-bubble">
                             <a class="dropdown-item" href="#"
-                               th:href="@{/scatter/refactoring-impact}">Refactoring impact</a>
+                               th:href="@{/chart/refactoring-impact/bubble}">Refactoring impact</a>
+                        </div>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link dropdown-toggle" href="#"
+                           data-toggle="dropdown" data-target="#"
+                           aria-haspopup="true" aria-expanded="false"
+                           role="button">Scatter chart<span class="caret"></span></a>
+                        <div class="dropdown-menu menu-scatter">
+                            <a class="dropdown-item" href="#"
+                               th:href="@{/chart/refactoring-impact/scatter}">Refactoring impact</a>
                         </div>
                     </li>
                 </ul>
@@ -74,11 +84,14 @@ $.ajax({
         }
     }
 }).done(function(data) {
-    var url = /*[[ @{/scatter/refactoring-impact} ]]*/ '#';
+    var bubbleUrl = /*[[ @{/chart/refactoring-impact/bubble} ]]*/ '#';
+    var scatterUrl = /*[[ @{/chart/refactoring-impact/scatter} ]]*/ '#';
     for (var i = 0; i < data.length; i++) {
         var d = data[i];
-        $('.dropdown-menu.menu-chart')
-                .append('<a class="dropdown-item" href="' + url + '/' + d.name + '">' + d.name + '</a>');
+        $('.dropdown-menu.menu-bubble')
+                .append('<a class="dropdown-item" href="' + bubbleUrl + '/' + d.name + '">' + d.name + '</a>');
+        $('.dropdown-menu.menu-scatter')
+                .append('<a class="dropdown-item" href="' + scatterUrl + '/' + d.name + '">' + d.name + '</a>');
     }
 });
 
