@@ -1,6 +1,6 @@
 package com.yo1000.whisker.service;
 
-import com.yo1000.whisker.component.Identifier;
+import com.yo1000.whisker.util.Identifier;
 import com.yo1000.whisker.model.Repository;
 import com.yo1000.whisker.repository.RepositoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +27,7 @@ public class RepositoryService {
     }
 
     public void create(Repository repository) {
-        repository.setId(this.getIdentifier().generate());
+        repository.setId(this.getIdentifier().get());
         repository.setModifier("UNKNOWN"); // TODO: Require the user management feature.
         this.getRepositoryRepository().insert(repository);
     }

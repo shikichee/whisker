@@ -1,24 +1,28 @@
-server:
-  compression:
-    enabled: true
-    mime-types: application/json, application/xml, text/html, text/xml, text/plain
-
 spring:
   thymeleaf:
     cache: true
 
   # DATASOURCE (DataSourceAutoConfiguration & DataSourceProperties)
   datasource:
-    #driver-class-name:  org.h2.Driver
-    #url:                jdbc:h2:file:${application.data.file}
-    driver-class-name:  net.sf.log4jdbc.DriverSpy
-    url:                jdbc:log4jdbc:h2:file:${application.data.file}
+    driver-class-name:  org.h2.Driver
+    url:                jdbc:h2:file:${application.data.file}
+#    driver-class-name:  net.sf.log4jdbc.DriverSpy
+#    url:                jdbc:log4jdbc:h2:file:${application.data.file}
     username:           sa
     password:
+
+server:
+  compression:
+    enabled: true
+    mime-types: application/json, application/xml, text/html, text/xml, text/plain
 
 security:
   basic:
     enabled: false
+
+#logging:
+#  level:
+#    com.yo1000.whisker.aspect: debug
 
 application:
   metrics:
@@ -34,3 +38,4 @@ application:
 
   data:
     file: ./whisker.datastore
+

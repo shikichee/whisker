@@ -1,4 +1,4 @@
-package com.yo1000.whisker.component;
+package com.yo1000.whisker.util;
 
 import org.springframework.security.authentication.encoding.ShaPasswordEncoder;
 
@@ -18,9 +18,12 @@ public class Identifier {
         this.salt = salt;
     }
 
-    public String generate() {
-        return new ShaPasswordEncoder().encodePassword(
-                UUID.randomUUID().toString(), this.getSalt());
+    public String get() {
+        return this.get(UUID.randomUUID().toString());
+    }
+
+    public String get(String seed) {
+        return new ShaPasswordEncoder().encodePassword(seed, this.getSalt());
     }
 
     protected Object getSalt() {

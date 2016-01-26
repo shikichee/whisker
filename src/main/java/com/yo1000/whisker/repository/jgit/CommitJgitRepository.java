@@ -22,6 +22,19 @@ import java.util.stream.StreamSupport;
 @Repository
 public class CommitJgitRepository implements CommitRepository {
     @Override
+    public String selectLatestId(Path gitDirectory) throws IOException {
+        org.eclipse.jgit.lib.Repository repository = newRepository(gitDirectory.toFile());
+        Git git = new Git(repository);
+
+        try {
+            return StreamSupport.stream(git.log().setMaxCount(1).call().spliterator(), false)
+                    .findFirst().get().getId().getName();
+        } catch (GitAPIException e) {
+            throw new IllegalStateException(e);
+        }
+    }
+
+    @Override
     public Map<String, Integer> selectDiffSummaryByLog(Path gitDirectory) throws IOException {
         return this.selectDiffSummaryByLog(gitDirectory, ".*");
     }
