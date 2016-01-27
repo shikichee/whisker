@@ -32,19 +32,34 @@ public class MetricsCacheAdvice {
 
     @Around("execution(* com.yo1000.whisker.service.metrics.MetricsService+.find(..)) && args(repository)")
     public Object around(ProceedingJoinPoint joinPoint, Repository repository) throws Throwable {
-        String key = new StringBuilder(joinPoint.getSignature().toString())
+        String reposKey = new StringBuilder(joinPoint.getSignature().toString())
                 .append(";").append(repository.getId())
-                .append(";").append(this.getCommitRepository().selectLatestId(Paths.get(repository.getGit().getDirectory())))
                 .toString();
 
-        if (this.getCacheRepository().exists(key)) {
-            LOGGER.debug("Cache hit. key=" + key);
-            return this.getCacheRepository().select(key);
+        Object cachedCommitId = this.getCacheRepository().select(reposKey);
+        String latestCommitId = this.getCommitRepository().selectLatestId(Paths.get(repository.getGit().getDirectory()));
+
+        String cacheKey = new StringBuilder(reposKey)
+                .append(";").append(latestCommitId)
+                .toString();
+
+        if (this.getCacheRepository().exists(cacheKey) && latestCommitId.equals(cachedCommitId)) {
+            LOGGER.debug("Cache hit. key=" + cacheKey);
+            return this.getCacheRepository().select(cacheKey);
         }
 
-        LOGGER.debug("Cache miss. key=" + key);
+        LOGGER.debug("Cache miss. key=" + cacheKey);
+
+        String deleteCacheKey = new StringBuilder(reposKey).append(";").append(cachedCommitId).toString();
+
+        if (this.getCacheRepository().exists(deleteCacheKey)) {
+            this.getCacheRepository().delete(reposKey);
+            this.getCacheRepository().delete(deleteCacheKey);
+        }
+
         Object o = joinPoint.proceed();
-        this.getCacheRepository().insert(key, o);
+        this.getCacheRepository().insert(reposKey, latestCommitId);
+        this.getCacheRepository().insert(cacheKey, o);
 
         return o;
     }

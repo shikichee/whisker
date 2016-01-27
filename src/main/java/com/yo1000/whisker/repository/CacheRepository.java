@@ -6,6 +6,6 @@ package com.yo1000.whisker.repository;
 public interface CacheRepository {
     Object select(String key);
     void insert(String key, Object value);
-    void update(String key, Object value);
+    void delete(String key);
     boolean exists(String key);
 }
