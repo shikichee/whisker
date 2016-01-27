@@ -4,7 +4,7 @@ body {
 }
 
 .bg-faded {
-    background-color: #bca443;
+    background-color: #3d4b66;  /* HSB 220,40,40 */
 }
 
 .navbar-brand>object {
@@ -49,7 +49,7 @@ body {
 }
 
 .table thead {
-    background-color: #e6dcb2;
+    background-color: #cfd6e6;  /* HSB 220,10,90 */
 }
 
 .navigator {
