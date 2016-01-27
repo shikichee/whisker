@@ -11,17 +11,15 @@
     <link href="../static/app/css/style.css" rel="stylesheet"/>
 </head>
 <body>
-<div class="container">
-    <div th:replace="_fragment::navigator" class="navigator">
-        <nav class="navbar navbar-dark bg-inverse bg-faded">
-            <div class="collapse navbar-toggleable-xs" id="navbar-header">
-                <a class="navbar-brand" href="#">
-                    <img src="../static/app/img/logo.svg" th:src="@{/app/img/logo.svg}" alt="logo" width="24" height="24"/>
-                    whisker
-                </a>
-            </div>
-        </nav>
-    </div>
+<div th:replace="_fragment::navigator" class="navigator">
+    <nav class="navbar navbar-dark navbar-static-top bg-inverse bg-faded">
+        <div class="collapse navbar-toggleable-xs" id="navbar-header">
+            <a class="navbar-brand" href="/">
+                <object type="image/svg+xml" data="../static/app/img/logo.svg" alt="logo" width="32" height="32"></object>
+                whisker
+            </a>
+        </div>
+    </nav>
 </div>
 <!-- #modal -->
 <div id="modal" class="modal fade" tabindex="-1" role="dialog"

@@ -1,5 +1,4 @@
 body {
-    padding-top: 20px;
     padding-bottom: 20px;
 }
 
@@ -54,6 +53,10 @@ body {
 
 .navigator {
     margin-bottom: 2rem;
+}
+
+.navigator .navbar {
+    border-radius: 0;
 }
 
 .popover {
