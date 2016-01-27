@@ -6,6 +6,10 @@ body {
     background-color: #3d4b66;  /* HSB 220,40,40 */
 }
 
+.container-fluid {
+    background-color: #f5f7fa;  /* HSB 220,2,98 */
+}
+
 .navbar-brand>object {
     display: inline;
     padding-bottom: 5px;
