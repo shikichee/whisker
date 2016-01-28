@@ -4,6 +4,7 @@ import com.yo1000.whisker.repository.CommitRepository;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.diff.DiffFormatter;
+import org.eclipse.jgit.patch.FileHeader;
 import org.eclipse.jgit.storage.file.FileRepositoryBuilder;
 import org.springframework.stereotype.Repository;
 
@@ -14,6 +15,7 @@ import java.nio.file.Path;
 import java.util.AbstractMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 import java.util.stream.StreamSupport;
 
 /**
@@ -47,17 +49,21 @@ public class CommitJgitRepository implements CommitRepository {
         DiffFormatter diffFormatter = new DiffFormatter(System.out);
         diffFormatter.setRepository(repository);
 
+        Pattern pattern = Pattern.compile(commentFilterRegex, Pattern.MULTILINE);
+
         try {
             return StreamSupport.stream(git.log().all().call().spliterator(), false)
-                    .filter(revCommit -> revCommit.getParentCount() == 1 && revCommit.getFullMessage().matches(commentFilterRegex)) // ignore merge
+                    .filter(revCommit -> revCommit.getParentCount() == 1 && pattern.matcher(revCommit.getFullMessage()).find()) // ignore merge
                     .flatMap(revCommit -> {
                         try {
                             return diffFormatter.scan(revCommit.getTree(), revCommit.getParent(0).getTree()).parallelStream()
                                     .map(diffEntry -> {
                                         try {
+                                            FileHeader header = diffFormatter.toFileHeader(diffEntry);
+
                                             return new AbstractMap.SimpleEntry<>(diffEntry.getNewPath(),
-                                                    diffFormatter.toFileHeader(diffEntry).toEditList().parallelStream()
-                                                            .mapToInt(edit -> Math.abs(edit.getLengthA() - edit.getLengthB()))
+                                                    header.toEditList().parallelStream()
+                                                            .mapToInt(edit -> Math.abs(edit.getLengthA()) + Math.abs(edit.getLengthB()))
                                                             .sum());
                                         } catch (IOException e) {
                                             throw new UncheckedIOException(e);
