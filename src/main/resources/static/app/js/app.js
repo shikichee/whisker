@@ -4,12 +4,18 @@
  * @param chart Chart type. Select the "bubble" or "scatter". (Optional)
  * @param xaxis X-Axis label. (Optional)
  * @param yaxis Y-Axis label. (Optional)
+ * @param xaxisTooltip X-Axis tooltip label. (Optional)
+ * @param yaxisTooltip Y-Axis tooltip label. (Optional)
  */
-var Chart = function (bindto, type, xaxis, yaxis) {
+var Chart = function (bindto, type, xaxis, yaxis, xaxisTooltip, yaxisTooltip) {
     this.bindto = bindto;
     this.type = type || 'bubble';
     this.xaxis = xaxis || 'Refactoring cost';
     this.yaxis = yaxis || 'Service impact';
+    this.tooltip = {
+        xaxis: xaxisTooltip || 'Refactoring cost',
+        yaxis: yaxisTooltip || 'Service impact'
+    };
 
     this.c3data = null;
     this.chart = null;
@@ -49,6 +55,8 @@ Chart.prototype.draw = function(data, filterZero, filterOver) {
     var chartType = this.type;
     var xaxisText = this.xaxis;
     var yaxisText = this.yaxis;
+    var xaxisTooltipText = this.tooltip.xaxis;
+    var yaxisTooltipText = this.tooltip.yaxis;
     var fZero = filterZero || false;
     var fOver = filterOver || false;
 
@@ -168,8 +176,8 @@ Chart.prototype.draw = function(data, filterZero, filterOver) {
 
                 var nms = posNames[key];
                 var contents = '<div style="background-color:rgba(255,255,255,0.9); padding:1rem;"><h1 style="font-size:18px;">' +
-                    xaxisText + ' = ' + data[0].x + '<br/>' +
-                    yaxisText + ' = ' + data[0].value + '</h1>';
+                    xaxisTooltipText + ' = ' + data[0].x + '<br/>' +
+                    yaxisTooltipText + ' = ' + data[0].value + '</h1>';
 
                 for (var i = 0; i < nms.length; i++) {
                     var nm = nms[i];

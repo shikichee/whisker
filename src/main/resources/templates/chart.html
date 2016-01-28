@@ -50,8 +50,13 @@
 <script th:inline="javascript">
 /*<![CDATA[*/
 (function init() {
-    var chart = new Chart('#chart', /*[[ ${chart} ]]*/ 'chartType');
     var url = /*[[ @{/api/v1} + ${metricsApi} ]]*/ '../static/app/js/example.json';
+    var type = /*[[ ${chart} ]]*/ 'chartType';
+    var xaxis = /*[[ ${xaxis} ]]*/ 'xaxis';
+    var yaxis = /*[[ ${yaxis} ]]*/ 'yaxis';
+    var xaxisTooltip = /*[[ ${xaxisTooltip} ]]*/ 'xaxisTooltip';
+    var yaxisTooltip = /*[[ ${yaxisTooltip} ]]*/ 'yaxisTooltip';
+    var chart = new Chart('#chart', type, xaxis, yaxis, xaxisTooltip, yaxisTooltip);
     var cache;
 
     $.ajax({
