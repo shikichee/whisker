@@ -4,6 +4,9 @@
     <meta charset="UTF-8"/>
     <title></title>
     <link rel="icon" href="../static/app/img/favicon.ico"/>
+    <link href="../static/jquery-ui.slider/css/jquery-ui.min.css" rel="stylesheet"/>
+    <link href="../static/jquery-ui.slider/css/jquery-ui.structure.min.css" rel="stylesheet"/>
+    <link href="../static/jquery-ui.slider/css/jquery-ui.theme.min.css" rel="stylesheet"/>
     <link href="../static/bootstrap4a2/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="../static/font-awesome/css/font-awesome.min.css" rel="stylesheet"/>
     <link href="../static/c3/css/c3.min.css" rel="stylesheet"/>
@@ -26,14 +29,35 @@
     <table class="table">
         <thead>
         <tr>
-            <th><input id="checkbox-zero" type="checkbox"/> Filter 0 value</th>
-            <th><input id="checkbox-over" type="checkbox"/> Filter oversized value</th>
+            <th>
+                <div class="text-nowrap">
+                    <label for="filter-complexity">Filter complexity:</label>
+                    <input type="text" id="filter-complexity" readonly="readonly"/>
+                </div>
+                <div id="filter-complexity-slider"></div>
+                <!--<input id="checkbox-zero" type="checkbox"/> Filter 0 value-->
+            </th>
+            <th>
+                <div class="text-nowrap">
+                    <label for="filter-impact">Filter impact:</label>
+                    <input type="text" id="filter-impact" readonly="readonly"/>
+                </div>
+                <div id="filter-impact-slider"></div>
+            </th>
+            <th>
+                <div class="text-nowrap">
+                    <label for="filter-dependency">Filter dependency:</label>
+                    <input type="text" id="filter-dependency" readonly="readonly"/>
+                    <div id="filter-dependency-slider"></div>
+                </div>
+                <!--<input id="checkbox-over" type="checkbox"/> Filter oversized value-->
+            </th>
             <th class="text-xs-right"><a id="chart-reset" href="#">Reset scale</a></th>
         </tr>
         </thead>
         <tbody>
         <tr>
-            <td colspan="3">
+            <td colspan="4">
                 <div id="chart"></div>
             </td>
         </tr>
@@ -42,6 +66,7 @@
 </div>
 <footer th:replace="_fragment::footer">
 <script src="../static/jquery2/js/jquery.min.js"></script>
+<script src="../static/jquery-ui.slider/js/jquery-ui.min.js"></script>
 <script src="../static/bootstrap4a2/js/bootstrap.min.js"></script>
 <script src="../static/d3/js/d3.min.js"></script>
 <script src="../static/c3/js/c3.min.js"></script>
@@ -68,6 +93,11 @@
     }).done(function(data) {
         cache = data;
         chart.draw(cache);
+
+        var ranges = extractRanges(cache);
+        slider($('#filter-complexity'), $('#filter-complexity-slider'), ranges.x.min, ranges.x.max);
+        slider($('#filter-impact'), $('#filter-impact-slider'), ranges.y.min, ranges.y.max);
+        slider($('#filter-dependency'), $('#filter-dependency-slider'), ranges.z.min, ranges.z.max);
     }).fail(function(error, textStatus, $xhr) {
         console.log(error);
     });
@@ -76,12 +106,73 @@
         chart.reset();
     });
 
-    $('#checkbox-zero, #checkbox-over').on('click', function() {
-        var checkedZero = $('#checkbox-zero').prop("checked");
-        var checkedOver = $('#checkbox-over').prop("checked");
+    var extractRanges = function(data) {
+        var ranges = {
+            x: {min: 0, max:0},
+            y: {min: 0, max:0},
+            z: {min: 0, max:0}
+        };
 
-        chart.draw(cache, checkedZero, checkedOver);
-    });
+        for (var i = 0; i < data.length; i++) {
+            var d = data[i];
+
+            var x = d.xs;
+            var y = d.ys;
+            var z = d.zs;
+
+            for (var j = 0; j < x.length; j++) {
+                if (ranges.x.max < x[j]) {
+                    ranges.x.max = x[j];
+                }
+            }
+
+            for (var j = 0; j < y.length; j++) {
+                if (ranges.y.max < y[j]) {
+                    ranges.y.max = y[j];
+                }
+            }
+
+            for (var key in z) {
+                var zz = z[key];
+                for (var j = 0; j < zz.length; j++) {
+                    if (ranges.z.max < zz[j].value) {
+                        ranges.z.max = zz[j].value;
+                    }
+                }
+            }
+        }
+
+        return ranges;
+    }
+
+    var slider = function($input, $slider, min, max, range) {
+        var rangeValue = range || [min, max];
+
+        $slider.slider({
+            range: true,
+            min: min,
+            max: max,
+            values: rangeValue,
+            slide: function(event, ui) {
+                $input.val(ui.values[0] + '-' + ui.values[1]);
+            },
+            change: function() {
+                var complexityValues = $('#filter-complexity').val().split('-');
+                var impactValues = $('#filter-impact').val().split('-');
+                var dependencyValues = $('#filter-dependency').val().split('-');
+
+                var ranges = {
+                    x: {min: complexityValues[0], max: complexityValues[1]},
+                    y: {min: impactValues[0], max: impactValues[1]},
+                    z: {min: dependencyValues[0], max: dependencyValues[1]}
+                };
+
+                chart.draw(cache, ranges);
+            }
+        });
+
+        $input.val($slider.slider('values', 0) + '-' + $slider.slider('values', 1));
+    };
 })();
 /*]]>*/
 </script>

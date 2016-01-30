@@ -4,6 +4,9 @@
     <meta charset="UTF-8"/>
     <title th:text="${title} + ' - whisker'">title</title>
     <link rel="icon" href="../static/app/img/favicon.ico" th:href="@{/app/img/favicon.ico}"/>
+    <link href="../static/jquery-ui.slider/css/jquery-ui.min.css" th:href="@{/jquery-ui.slider/css/jquery-ui.min.css}" rel="stylesheet"/>
+    <link href="../static/jquery-ui.slider/css/jquery-ui.structure.min.css" th:href="@{/jquery-ui.slider/css/jquery-ui.structure.min.css}" rel="stylesheet"/>
+    <link href="../static/jquery-ui.slider/css/jquery-ui.theme.min.css" th:href="@{/jquery-ui.slider/css/jquery-ui.theme.min.css}" rel="stylesheet"/>
     <link href="../static/tether/css/tether.min.css" th:href="@{/tether/css/tether.min.css}" rel="stylesheet"/>
     <link href="../static/bootstrap4a2/css/bootstrap.min.css" th:href="@{/bootstrap4a2/css/bootstrap.min.css}" rel="stylesheet"/>
     <link href="../static/font-awesome/css/font-awesome.min.css" th:href="@{/font-awesome/css/font-awesome.min.css}" rel="stylesheet"/>
@@ -62,6 +65,7 @@
 </div>
 <footer th:fragment="footer">
 <script src="../static/jquery2/js/jquery.min.js" th:src="@{/jquery2/js/jquery.min.js}"></script>
+<script src="../static/jquery-ui.slider/js/jquery-ui.min.js" th:src="@{/jquery-ui.slider/js/jquery-ui.min.js}"></script>
 <script src="../static/tether/js/tether.min.js" th:src="@{/tether/js/tether.min.js}"></script>
 <script src="../static/bootstrap4a2/js/bootstrap.min.js" th:src="@{/bootstrap4a2/js/bootstrap.min.js}"></script>
 <script src="../static/d3/js/d3.min.js" th:src="@{/d3/js/d3.min.js}"></script>
@@ -69,30 +73,30 @@
 <script src="../static/app/js/app.js" th:src="@{/app/js/app.js}"></script>
 <script type="text/javascript" th:inline="javascript">
 /*<![CDATA[*/
-
-$.ajax({
-    type: 'GET',
-    url: /*[[ @{/api/v1/repositories} ]]*/ '#',
-    contentType: 'application/json;charset=UTF-8',
-    processData: false,
-    dataType: 'json',
-    statusCode: {
-        404: function() {
-            console.log('page not found');
+(function init() {
+    $.ajax({
+        type: 'GET',
+        url: /*[[ @{/api/v1/repositories} ]]*/ '#',
+        contentType: 'application/json;charset=UTF-8',
+        processData: false,
+        dataType: 'json',
+        statusCode: {
+            404: function() {
+                console.log('page not found');
+            }
         }
-    }
-}).done(function(data) {
-    var bubbleUrl = /*[[ @{/chart/refactoring-impact/bubble} ]]*/ '#';
-    var scatterUrl = /*[[ @{/chart/refactoring-impact/scatter} ]]*/ '#';
-    for (var i = 0; i < data.length; i++) {
-        var d = data[i];
-        $('.dropdown-menu.menu-bubble')
-                .append('<a class="dropdown-item" href="' + bubbleUrl + '/' + d.name + '">' + d.name + '</a>');
-        $('.dropdown-menu.menu-scatter')
-                .append('<a class="dropdown-item" href="' + scatterUrl + '/' + d.name + '">' + d.name + '</a>');
-    }
-});
-
+    }).done(function(data) {
+        var bubbleUrl = /*[[ @{/chart/refactoring-impact/bubble} ]]*/ '#';
+        var scatterUrl = /*[[ @{/chart/refactoring-impact/scatter} ]]*/ '#';
+        for (var i = 0; i < data.length; i++) {
+            var d = data[i];
+            $('.dropdown-menu.menu-bubble')
+                    .append('<a class="dropdown-item" href="' + bubbleUrl + '/' + d.name + '">' + d.name + '</a>');
+            $('.dropdown-menu.menu-scatter')
+                    .append('<a class="dropdown-item" href="' + scatterUrl + '/' + d.name + '">' + d.name + '</a>');
+        }
+    });
+})();
 /*]]>*/
 </script>
 </footer>

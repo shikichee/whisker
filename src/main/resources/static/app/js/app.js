@@ -47,18 +47,25 @@ var Chart = function (bindto, type, xaxis, yaxis, xaxisTooltip, yaxisTooltip) {
  *   }
  * }]
  *
+ * filter layout requirements:
+ * {
+ *   "x": { "min": 0, "max": 100 },
+ *   "y": { "min": 0, "max": 200 },
+ *   "z": { "min": 0, "max": 100 }
+ * }
+ *
  * @param data Chart data.
- * @param filterZero (Optional)
- * @param filterOver (Optional)
+ * @param filter (Optional)
  */
-Chart.prototype.draw = function(data, filterZero, filterOver) {
+Chart.prototype.draw = function(data, filter) {
     var chartType = this.type;
     var xaxisText = this.xaxis;
     var yaxisText = this.yaxis;
     var xaxisTooltipText = this.tooltip.xaxis;
     var yaxisTooltipText = this.tooltip.yaxis;
-    var fZero = filterZero || false;
-    var fOver = filterOver || false;
+    var fx = !filter ? undefined : filter.x ;
+    var fy = !filter ? undefined : filter.y;
+    var fz = !filter ? undefined : filter.z;
 
     var posNames = {};
     var nameValues = {};
@@ -72,26 +79,30 @@ Chart.prototype.draw = function(data, filterZero, filterOver) {
         var key = 'x' + x + 'y' + y;
 
         var nms = posNames[key];
-        var max = 0;
+        var z = 0;
         for (var i = 0; i < nms.length; i++) {
             var nm = nms[i];
             var val = nameValues[nm];
 
-            if (max < val.value) {
-                max = val.value;
+            if (z < val.value) {
+                z = val.value;
             }
         }
 
-        if (fZero && (x <= 0 || y <= 0 || max <= 0)) {
+        if (fx && (x < fx.min || x > fx.max)) {
             return 0;
         }
 
-        if (fOver && (x > 100 || y > 100 || max > 100)) {
+        if (fy && (y < fy.min || y > fy.max)) {
             return 0;
         }
 
-        max += 1;
-        var radius = max < 100 ? max : 100;
+        if (fz && (z < fz.min || z > fz.max)) {
+            return 0;
+        }
+
+        z += 1;
+        var radius = z < 100 ? z : 100;
         return chartType === 'bubble' ? radius : 2.5;
     };
 
