@@ -81,7 +81,7 @@ input[readonly] {
 .ui-slider,
 .ui-slider-range,
 .ui-slider-handle {
-    border-radius: 10px;
+    border-radius: 0;
 }
 
 .ui-slider-horizontal .ui-slider-handle {
