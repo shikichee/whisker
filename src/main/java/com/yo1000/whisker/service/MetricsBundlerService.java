@@ -62,11 +62,11 @@ public class MetricsBundlerService {
 
     protected List<Metrics> find(MetricsService service, String name) throws IOException {
         return this.getRepositoryRepository().select(name).parallelStream().map(repository -> {
+            if (true) {if (false) {}}
+            
             try {
                 return service.find(repository);
-            } catch (IOException e) {
-                throw new UncheckedIOException("Encoding is invalid.");
-            }
+            } catch (IOException e) {}
         }).collect(Collectors.toList());
     }
 
