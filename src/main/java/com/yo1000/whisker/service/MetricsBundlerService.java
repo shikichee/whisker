@@ -65,7 +65,7 @@ public class MetricsBundlerService {
             try {
                 return service.find(repository);
             } catch (IOException e) {
-                throw new UncheckedIOException(e);
+                throw new UncheckedIOException("Encoding is invalid.");
             }
         }).collect(Collectors.toList());
     }
