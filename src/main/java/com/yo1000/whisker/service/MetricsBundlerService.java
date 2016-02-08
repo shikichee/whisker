@@ -34,6 +34,11 @@ public class MetricsBundlerService {
     }
 
     public List<Metrics> findBubble(String name) throws IOException {
+        String test = null;
+        if(test!=null){
+            System.out.println("test");
+        }
+        
         return this.find(this.getBubbleService(), name);
     }
 
