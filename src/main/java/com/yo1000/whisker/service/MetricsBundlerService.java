@@ -34,6 +34,11 @@ public class MetricsBundlerService {
     }
 
     public List<Metrics> findBubble(String name) throws IOException {
+        String test = null;
+        if(test!=null){
+            System.out.println("test");
+        }
+        
         return this.find(this.getBubbleService(), name);
     }
 
@@ -57,11 +62,11 @@ public class MetricsBundlerService {
 
     protected List<Metrics> find(MetricsService service, String name) throws IOException {
         return this.getRepositoryRepository().select(name).parallelStream().map(repository -> {
+            if (true) {if (false) {}}
+            
             try {
                 return service.find(repository);
-            } catch (IOException e) {
-                throw new UncheckedIOException(e);
-            }
+            } catch (IOException e) {}
         }).collect(Collectors.toList());
     }
 
